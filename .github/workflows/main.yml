@@ -1,36 +1,66 @@
 # This is a basic workflow to help you get started with Actions
-
+# 这是帮助您开始使用 Actions 的基本工作流程
 name: CI
 
 # Controls when the workflow will run
+# 控制工作流何时运行
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
+  # 在推送或拉取请求事件上触发工作流，但仅适用于主分支
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  # 允许您从“操作”选项卡手动运行此工作流
+#  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# 工作流运行由一个或多个可以顺序或并行运行的作业组成
 jobs:
   # This workflow contains a single job called "build"
+  # 此工作流包含一个名为“构建”的作业
   build:
     # The type of runner that the job will run on
+    # 作业将在其上运行的跑步者的类型
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
+    # 步骤表示将作为作业的一部分执行的一系列任务
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # 使用别人的 action, 检查代码
       - uses: actions/checkout@v2
+      # 步骤名称、执行指令
+      - name: npm install
+        run: npm install
+      - name: npm run build
+        run: npm run build
+      - name: Deploy
+        # 因为构建之后, 需要把代码上传到服务器上, 所以需要连接 ssh, 并且做一个拷贝操作
+        uses: cross-the-world/scp-pipeline@master
+        env:
+          WELCOME: "ssh scp ssh pipelines"
+          LASTSSH: "Doing something after copying"
+        with:
+          host: ${{ secrets.USER_HOST }}
+          user: ${{ secrets.USER_NAME }}
+          pass: ${{ secrets.USER_PASS }}
+          connect_timeout: 10s
+          local: './dist/*'
+          remote: /usr/share/nginx/html2
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        # 在 GITHUB_WORKSPACE 下签出您的存储库，以便您的工作可以访问它
+        #      - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+        # Runs a single command using the runners shell
+        # 使用 runners shell 运行单个命令
+        #      - name: Run a one-line script
+        #        run: echo Hello, world!
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+        # Runs a set of commands using the runners shell
+        # 使用 runners shell 运行一组命令
+        #      - name: Run a multi-line script
+        #        run: |
+        #          echo Add other actions to build,
+      #          echo test, and deploy your project.
