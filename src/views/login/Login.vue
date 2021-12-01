@@ -36,6 +36,8 @@ import AvatarBox from 'components/content/login/avatarbox/AvatarBox'
 
 import { getLogin } from 'network/login'
 
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Login',
   components: {
@@ -80,6 +82,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      addToken: 'addToken'
+    }),
     reset () {
       this.$refs.loginFormRef.resetFields()
     },
@@ -89,11 +94,12 @@ export default {
           return false
         } else {
           getLogin(this.loginForm.username, this.loginForm.password).then(data => {
+            console.log(data)
             if (data.meta.status === 200) {
               this.$message.success('登录成功')
-              console.log(data.data.token)
               // 记住 token
-              window.sessionStorage.setItem('token', data.data.token)
+              this.addToken(data.data.token)
+              // window.sessionStorage.setItem('token', data.data.token)
               // 跳转至后台首页
               this.$router.push('home')
             } else {
