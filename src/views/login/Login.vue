@@ -93,13 +93,11 @@ export default {
         if (!valid) {
           return false
         } else {
-          getLogin(this.loginForm.username, this.loginForm.password).then(data => {
-            console.log(data)
-            if (data.meta.status === 200) {
+          getLogin(this.loginForm.username, this.loginForm.password).then(res => {
+            if (res.meta.status === 200) {
               this.$message.success('登录成功')
               // 记住 token
-              this.addToken(data.data.token)
-              // window.sessionStorage.setItem('token', data.data.token)
+              this.addToken(res.data.token)
               // 跳转至后台首页
               this.$router.push('home')
             } else {

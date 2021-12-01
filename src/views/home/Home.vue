@@ -5,11 +5,16 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Home',
   methods: {
+    ...mapActions({
+      updateToken: 'updateToken'
+    }),
     logout () {
-      window.localStorage.clear()
+      this.updateToken('')
       this.$router.push('/login')
     }
   }
