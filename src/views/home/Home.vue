@@ -12,56 +12,35 @@
       <!--页面主体区域-->
       <el-container>
         <!-- 侧边栏 -->
-        <el-aside width="200px">
-          <!--  -->
+        <el-aside :width="isCollapse ? '64px' : '200px'">
+          <div class="toggle-button" @click="toggleCollapse">|||</div>
+          <!-- 侧边栏菜单区域 -->
           <el-menu
-            background-color="RGB(51,55,68)"
+            background-color="#333744"
             text-color="#fff"
-            active-text-color="#ffd04b"
+            active-text-color="#409EFF"
+            unique-opened="true"
+            :collapse="isCollapse"
+            :collapse-transition="false"
           >
-            <el-submenu index="1">
+            <!-- 一级菜单 -->
+            <el-submenu :index="menu.id + ''" v-for="menu in menus" :key="menu.id">
+              <!-- 一级菜单的模板区域 -->
               <template #title>
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <!-- 图标 -->
+                <i :class="icons[menu.id]"></i>
+                <!-- 文本 -->
+                <span>{{ menu.authName }}</span>
               </template>
-              <el-menu-item-group>
-                <template #title>分组一</template>
-                <el-menu-item index="1-1">选项1</el-menu-item>
-                <el-menu-item index="1-2">选项2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="分组2">
-                <el-menu-item index="1-3">选项3</el-menu-item>
-              </el-menu-item-group>
-              <el-submenu index="1-4">
-                <template #title>选项4</template>
-                <el-menu-item index="1-4-1">选项1</el-menu-item>
-              </el-submenu>
-            </el-submenu>
-            <el-menu-item index="2">
-              <i class="el-icon-menu"></i>
-              <template #title>导航二</template>
-            </el-menu-item>
-            <el-menu-item index="3" disabled>
-              <i class="el-icon-document"></i>
-              <template #title>导航三</template>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <template #title>导航四</template>
-            </el-menu-item>
-            <el-submenu index="5">
-              <template #title>
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
-              </template>
-              <el-menu-item-group>
-                <template #title>分组一</template>
-                <el-menu-item index="5-1">选项1</el-menu-item>
-                <el-menu-item index="5-2">选项2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="分组2">
-                <el-menu-item index="5-3">选项3</el-menu-item>
-              </el-menu-item-group>
+              <!-- 二级菜单 -->
+              <el-menu-item :index="childrenItem.id + ''" v-for="childrenItem in menu.children" :key="childrenItem.id">
+                <template slot="title">
+                  <!-- 图标 -->
+                  <i class="el-icon-menu"></i>
+                  <!-- 文本 -->
+                  <span>{{ childrenItem.authName }}</span>
+                </template>
+              </el-menu-item>
             </el-submenu>
           </el-menu>
         </el-aside>
@@ -74,17 +53,38 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { getMenus } from 'network/home'
 
 export default {
   name: 'Home',
+  data () {
+    return {
+      menus: null,
+      icons: {
+        125: 'iconfont icon-user',
+        103: 'iconfont icon-danju',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-tijikongjian',
+        145: 'iconfont icon-baobiao'
+      },
+      isCollapse: false
+    }
+  },
+  created () {
+    getMenus().then(res => {
+      console.log(res)
+      this.menus = res.data
+    })
+  },
   components: {},
   methods: {
-    ...mapActions({
-      updateToken: 'updateToken'
-    }),
+    ...mapActions({ updateToken: 'updateToken' }),
     logout () {
       this.updateToken('')
       this.$router.push('/login')
+    },
+    toggleCollapse () {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -116,10 +116,27 @@ export default {
 
 .el-aside {
   background-color: #333744;
+
+  .el-menu {
+    border-right: none;
+  }
 }
 
 .el-main {
   background-color: #eaedf1;
 }
 
+.iconfont {
+  margin-right: 10px;
+}
+
+.toggle-button {
+  background-color: #4A5064;
+  font-size: 10px;
+  line-height: 24px;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
 </style>

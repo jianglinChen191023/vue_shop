@@ -1,4 +1,5 @@
 import axios from 'axios'
+import store from '../store'
 
 // 三次优化
 export function request (config) {
@@ -14,6 +15,8 @@ export function request (config) {
     // 1. 比如 config 中一些信息不符合服务器的要求
     // 2. 比如每次发送网络请求时, 都希望在界面中显示一个请求的图标
     // console.log('来到了 request 拦截 success 中')
+    // 添加请求头的 token 信息
+    config.headers.authorization = store.getters.token
     return config
   }, err => {
     // console.log('来到了 request 拦截 failure 中')
