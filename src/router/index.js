@@ -4,6 +4,7 @@ import store from '../store'
 
 const Login = () => import('../views/login/Login.vue')
 const Home = () => import('../views/home/Home.vue')
+const Welcome = () => import('../views/welcome/Welcome.vue')
 
 Vue.use(VueRouter)
 
@@ -20,7 +21,14 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    redirect: '/welcome',
+    children: [
+      {
+        path: '/welcome',
+        component: Welcome
+      }
+    ]
   }
 ]
 
