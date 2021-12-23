@@ -97,6 +97,7 @@ export default {
             if (res.meta.status === 200) {
               this.$message.success('登录成功')
               // 记住 token
+              window.localStorage.setItem('token', res.data.token)
               this.addToken(res.data.token)
               // 跳转至后台首页
               this.$router.push('home')
