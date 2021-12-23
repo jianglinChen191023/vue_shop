@@ -19,9 +19,10 @@
             background-color="#333744"
             text-color="#fff"
             active-text-color="#409EFF"
-            unique-opened="true"
+            :unique-opened="true"
             :collapse="isCollapse"
             :collapse-transition="false"
+            :router="true"
           >
             <!-- 一级菜单 -->
             <el-submenu :index="menu.id + ''" v-for="menu in menus" :key="menu.id">
@@ -33,7 +34,8 @@
                 <span>{{ menu.authName }}</span>
               </template>
               <!-- 二级菜单 -->
-              <el-menu-item :index="childrenItem.id + ''" v-for="childrenItem in menu.children" :key="childrenItem.id">
+              <el-menu-item :index="'/' + childrenItem.path + ''" v-for="childrenItem in menu.children"
+                            :key="childrenItem.id">
                 <template slot="title">
                   <!-- 图标 -->
                   <i class="el-icon-menu"></i>
