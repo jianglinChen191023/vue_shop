@@ -1,6 +1,6 @@
 <template>
   <!-- 面包屑导航 -->
-  <div>
+  <div class="breadcrumb">
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <slot name="home">
         <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
