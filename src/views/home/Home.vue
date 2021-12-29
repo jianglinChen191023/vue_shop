@@ -23,6 +23,7 @@
             :collapse="isCollapse"
             :collapse-transition="false"
             :router="true"
+            :default-active="activePath"
           >
             <!-- 一级菜单 -->
             <el-submenu :index="menu.id + ''" v-for="menu in menus" :key="menu.id">
@@ -35,7 +36,7 @@
               </template>
               <!-- 二级菜单 -->
               <el-menu-item :index="'/' + childrenItem.path + ''" v-for="childrenItem in menu.children"
-                            :key="childrenItem.id">
+                            :key="childrenItem.id" @click="saveNavState('/' + childrenItem.path)">
                 <template slot="title">
                   <!-- 图标 -->
                   <i class="el-icon-menu"></i>
@@ -57,8 +58,11 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { getMenus } from 'network/home'
+import {
+  UPDATE_ACTIVE_PATH
+} from '@/store/mutation-types'
 
 export default {
   name: 'Home',
@@ -72,24 +76,33 @@ export default {
         102: 'iconfont icon-tijikongjian',
         145: 'iconfont icon-baobiao'
       },
-      isCollapse: false
+      isCollapse: false,
+      activePath: ''
     }
   },
   created () {
     getMenus().then(res => {
-      console.log(res)
       this.menus = res.data
     })
+
+    this.activePath = this.$store.getters.activePath
   },
   components: {},
   methods: {
     ...mapActions({ updateToken: 'updateToken' }),
+    ...mapMutations({ updateActivePath: UPDATE_ACTIVE_PATH }),
     logout () {
       this.updateToken('')
       this.$router.push('/login')
     },
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 保存链接的激活状态
+    saveNavState (activePath) {
+      this.activePath = activePath
+      window.localStorage.setItem('activePath', activePath)
+      this.updateActivePath(activePath)
     }
   }
 }
