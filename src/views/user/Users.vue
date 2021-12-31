@@ -32,7 +32,7 @@
           <el-table-column label="角色" prop="role_name"></el-table-column>
           <el-table-column label="状态" >
             <template slot-scope="scope">
-              {{scope.row}}
+              <el-switch v-model="scope.row.mg_state"></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
