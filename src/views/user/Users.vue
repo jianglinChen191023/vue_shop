@@ -32,7 +32,7 @@
         <el-table-column label="角色" prop="role_name"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state"></el-switch>
+            <el-switch v-model="scope.row.mg_state" @change="userStateChange(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { getUsers } from 'network/users'
+import { getUsers, updateState } from 'network/users'
 
 export default {
   name: 'Users',
@@ -102,6 +102,15 @@ export default {
     handleCurrentChange (newPageNum) {
       this.queryInfo.pagenum = newPageNum
       this.getUsers2()
+    },
+    // 监听 Switch 状态的改变
+    userStateChange (row) {
+      updateState(row.id, row.mg_state).then(res => {
+        if (res.meta.status !== 200) {
+          row.mg_state = !row.mg_state
+          this.$message.error('更新用户状态失败')
+        }
+      })
     }
   }
 }
