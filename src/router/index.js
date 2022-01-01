@@ -23,7 +23,10 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Home,
-    redirect: '/welcome',
+    // redirect: '/welcome',
+    redirect () {
+      return store.getters.activePath
+    },
     children: [
       {
         path: '/welcome',
