@@ -48,6 +48,17 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!-- 分页区域 -->
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryInfo.pagenum"
+          :page-sizes="[1, 5, 10]"
+          :page-size="queryInfo.pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
       </el-card>
     </card>
   </div>
@@ -66,25 +77,45 @@ export default {
   },
   data () {
     return {
-      users: '',
+      users: [],
       // 获取用户列表的参数对象
       queryInfo: {
         query: '',
+        // 当前页数
         pagenum: 1,
-        pagesize: 2
+        // 当前每页显示多少条数据
+        pagesize: 1
       },
       total: 0
     }
   },
   created () {
-    getUsers(this.queryInfo).then(res => {
-      this.users = res.data.users
-      this.total = res.data.total
-    })
+    this.getUsers2()
+  },
+  methods: {
+    // 获取用户数据
+    getUsers2 () {
+      getUsers(this.queryInfo).then(res => {
+        this.users = res.data.users
+        this.total = res.data.total
+      })
+    },
+    // 监听 pagesize 改变的事件
+    handleSizeChange (newSize) {
+      this.queryInfo.pagesize = newSize
+      this.getUsers2()
+    },
+    // 监听 页码值 改变的事件
+    handleCurrentChange (newPageNum) {
+      this.queryInfo.pagenum = newPageNum
+      this.getUsers2()
+    }
   }
 }
 </script>
 
 <style scoped>
-
+.el-pagination {
+  margin-top: 15px;
+}
 </style>
