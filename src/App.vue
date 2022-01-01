@@ -6,6 +6,7 @@
 
 <style>
 @import "assets/css/base.css";
+@import "assets/css/element.css";
 
 html, body, #app {
   height: 100%;
