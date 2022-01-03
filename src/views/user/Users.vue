@@ -19,7 +19,7 @@
         </el-col>
         <!-- 按钮 -->
         <el-col :span="4">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="isShowAdd = true">添加用户</el-button>
         </el-col>
       </el-row>
 
@@ -60,6 +60,20 @@
         :total="total">
       </el-pagination>
     </el-card>
+
+    <!-- 添加用户的对话框 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="isShowAdd"
+      width="50%">
+      <!-- 内容主体区域 -->
+      <span>这是一段信息</span>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+            <el-button @click="isShowAdd = false">取 消</el-button>
+            <el-button type="primary" @click="isShowAdd = false">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -79,7 +93,9 @@ export default {
         // 当前每页显示多少条数据
         pagesize: 1
       },
-      total: 0
+      total: 0,
+      // 控制添加对话框的显示与隐藏
+      isShowAdd: false
     }
   },
   created () {
