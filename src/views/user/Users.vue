@@ -96,6 +96,32 @@ import { getUsers, updateState } from 'network/users'
 export default {
   name: 'Users',
   data () {
+    // 验证邮箱的规则
+    const checkEmail = (rule, value, cb) => {
+      // 验证邮箱的正则表达式
+      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+
+      if (regEmail.test(value)) {
+        // 合法的邮箱
+        return cb()
+      }
+
+      cb(new Error('请输入合法的邮箱'))
+    }
+
+    // 验证手机号的规则
+    const checkMobile = (rule, value, cb) => {
+      // 验证手机号的正则表达式
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+
+      if (regMobile.test(value)) {
+        // 合法的手机号
+        return cb()
+      }
+
+      cb(new Error('请输入合法的手机号'))
+    }
+
     return {
       users: [],
       // 获取用户列表的参数对象
@@ -150,12 +176,20 @@ export default {
             required: true,
             message: '请输入邮箱',
             trigger: 'blur'
+          },
+          {
+            validator: checkEmail,
+            trigger: 'blur'
           }
         ],
         mobile: [
           {
             required: true,
             message: '请输入手机号',
+            trigger: 'blur'
+          },
+          {
+            validator: checkMobile,
             trigger: 'blur'
           }
         ]
