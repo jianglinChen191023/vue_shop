@@ -65,7 +65,8 @@
     <el-dialog
       title="提示"
       :visible.sync="isShowAdd"
-      width="50%">
+      width="50%"
+      @close="addDialogClose">
       <!-- 内容主体区域 -->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
         <el-form-item label="用户名" prop="username">
@@ -225,6 +226,10 @@ export default {
           this.$message.error('更新用户状态失败')
         }
       })
+    },
+    // 监听添加对话框的关闭事件
+    addDialogClose () {
+      this.$refs.addFormRef.resetFields()
     }
   }
 }
