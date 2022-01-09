@@ -13,3 +13,16 @@ export function updateState (uId, type) {
     method: 'put'
   })
 }
+
+// export function saveUser (username, password, email, mobile) {
+//   return request({
+//     url: '/users',
+//     method: 'post',
+//     params: {
+//       username: username,
+//       password: password,
+//       email: email,
+//       mobile: mobile
+//     }
+//   })
+// }
