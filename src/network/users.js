@@ -14,15 +14,10 @@ export function updateState (uId, type) {
   })
 }
 
-// export function saveUser (username, password, email, mobile) {
-//   return request({
-//     url: '/users',
-//     method: 'post',
-//     params: {
-//       username: username,
-//       password: password,
-//       email: email,
-//       mobile: mobile
-//     }
-//   })
-// }
+export function saveUser (addForm) {
+  return request({
+    url: '/users',
+    method: 'post',
+    data: addForm
+  })
+}

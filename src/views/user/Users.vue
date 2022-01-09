@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { getUsers, updateState } from 'network/users'
+import { getUsers, updateState, saveUser } from 'network/users'
 
 export default {
   name: 'Users',
@@ -236,6 +236,22 @@ export default {
       this.$refs.addFormRef.validate(valid => {
         if (!valid) return
         // 可以发起添加用户的请求
+        saveUser(this.addForm)
+          .then(res => {
+            console.log(res.meta.status)
+            if (res.meta.status !== 201) {
+              this.$message.error('添加用户失败')
+              return false
+            }
+            this.$message.success('添加用户成功')
+            // 隐藏添加用户框
+            this.isShowAdd = false
+            // 重新获取用户列表数据
+            this.getUsers2()
+          })
+          .catch(err => {
+            this.$message.error('请求失败: ' + err)
+          })
       })
     }
   }
