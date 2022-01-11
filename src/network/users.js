@@ -30,7 +30,7 @@ export function getUserById (id) {
 
 export function updateUserInfo (id, email, mobile) {
   return request({
-    url: `/users1/${id}`,
+    url: `/users/${id}`,
     method: 'put',
     data: {
       email,
