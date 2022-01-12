@@ -10,7 +10,8 @@ Vue.use(Vuex)
 
 // 2. 创建对象
 const state = {
-  token: ''
+  token: '',
+  activePath: ''
 }
 
 const store = new Vuex.Store({

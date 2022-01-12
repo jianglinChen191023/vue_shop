@@ -1,6 +1,7 @@
 import {
   ADD_TOKEN,
-  UPDATE_TOKEN
+  UPDATE_TOKEN,
+  UPDATE_ACTIVE_PATH
 } from './mutation-types'
 
 export default {
@@ -11,5 +12,8 @@ export default {
   },
   [UPDATE_TOKEN] (state, token) {
     state.token = token
+  },
+  [UPDATE_ACTIVE_PATH] (state, activePath) {
+    state.activePath = activePath
   }
 }
