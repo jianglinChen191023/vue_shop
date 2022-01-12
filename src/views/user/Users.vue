@@ -40,7 +40,8 @@
             <!-- 修改按钮 -->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <!-- 删除按钮 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini"
+                       @click="deleteUserById(scope.row.id)"></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip effect="dark" content="分配角色" placement="top-start" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -117,7 +118,7 @@
 </template>
 
 <script>
-import { getUsers, updateState, saveUser, getUserById, updateUserInfo } from 'network/users'
+import { getUsers, updateState, saveUser, getUserById, updateUserInfo, deleteUserInfoById } from 'network/users'
 
 export default {
   name: 'Users',
@@ -342,6 +343,30 @@ export default {
             // 提示更新成功
             this.$message.success('更新用户信息成功!')
           })
+      })
+    },
+    // 根据 id 删除用户
+    deleteUserById (id) {
+      // 弹框询问用户是否删除数据
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteUserInfoById(id).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('删除用户失败!')
+          }
+
+          this.$message.success('删除用户成功!')
+          // 刷新数据
+          this.getUsers2()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   }

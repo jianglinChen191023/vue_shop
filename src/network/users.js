@@ -38,3 +38,11 @@ export function updateUserInfo (id, email, mobile) {
     }
   })
 }
+
+// 删除单个用户
+export function deleteUserInfoById (id) {
+  return request({
+    url: `/users/${id}`,
+    method: 'delete'
+  })
+}
