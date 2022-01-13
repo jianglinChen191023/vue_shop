@@ -26,7 +26,7 @@ export function getRoleById (roleId) {
 export function updateRoleById (roleId, roleName, roleDesc) {
   return request({
     url: `roles/${roleId}`,
-    method: 'delete',
+    method: 'put',
     data: {
       roleName,
       roleDesc
