@@ -69,7 +69,8 @@
               编辑
             </el-button>
             <!-- 删除按钮 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteRoleById(scope.row.id)">删除
+            </el-button>
             <!-- 分配权限 -->
             <el-tooltip effect="dark" content="分配权限" placement="top-start" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
@@ -102,7 +103,7 @@
 </template>
 
 <script>
-import { getRolesList, deleteRightById, getRoleById, updateRoleById } from 'network/roles'
+import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById } from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -197,6 +198,29 @@ export default {
           this.$message.success('修改角色信息成功')
           this.updateDialogVisible = false
           this.getRolesList()
+        })
+      })
+    },
+    // 根据 Id 删除角色
+    deleteRoleById (id) {
+      this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteRoleById(id).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('删除角色失败!')
+          }
+
+          this.$message.success('删除角色成功!')
+          // 刷新数据
+          this.getRolesList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
       })
     }

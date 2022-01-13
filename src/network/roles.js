@@ -33,3 +33,11 @@ export function updateRoleById (roleId, roleName, roleDesc) {
     }
   })
 }
+
+// 根据 ID 删除角色
+export function deleteRoleById (roleId) {
+  return request({
+    url: `roles/${roleId}`,
+    method: 'delete'
+  })
+}
