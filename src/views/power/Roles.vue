@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { getRolesList, deleteRightById, getRoleById } from 'network/roles'
+import { getRolesList, deleteRightById, getRoleById, updateRoleById } from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -189,7 +189,15 @@ export default {
       this.$refs.updateFormRef.validate(valid => {
         if (!valid) return
         // 请求修改角色信息
-        console.log(this.updateFormData)
+        updateRoleById(this.updateFormData.roleId, this.updateFormData.roleName, this.updateFormData.roleDesc).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('修改角色信息失败!')
+          }
+
+          this.$message.success('修改角色信息成功')
+          this.updateDialogVisible = false
+          this.getRolesList()
+        })
       })
     }
   }
