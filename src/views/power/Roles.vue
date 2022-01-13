@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { getRolesList, deleteRightById } from 'network/roles'
+import { getRolesList, deleteRightById, getRoleById } from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -166,9 +166,18 @@ export default {
       })
     },
     // 监听打开修改对话框
-    openUpdateDialog () {
-      this.updateDialogVisible = true
+    openUpdateDialog (id) {
       // 根据 Id 请求角色数据
+      getRoleById(id).then(res => {
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取角色信息失败!')
+        }
+
+        // 显示编辑对话框
+        this.updateDialogVisible = true
+        // 保存数据
+        this.updateFormData = res.data
+      })
     },
     // 监听关闭修改对话框
     updateHandleClose () {
