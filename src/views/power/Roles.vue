@@ -36,7 +36,10 @@
                         :key="item2.id">
                   <!-- 二级权限 -->
                   <el-col :span="6">
-                    <el-tag type="success" closable @close="deleteRightById(scope.row, item2.id)">{{ item2.authName }}</el-tag>
+                    <el-tag type="success" closable @close="deleteRightById(scope.row, item2.id)">{{
+                        item2.authName
+                      }}
+                    </el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <!-- 三级权限 -->
@@ -62,7 +65,9 @@
         <el-table-column label="操作" width="300px">
           <template slot-scope="scope">
             <!-- 编辑按钮 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini">{{ scope.row.id }}编辑</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="openUpdateDialog(scope.row.id)">
+              编辑
+            </el-button>
             <!-- 删除按钮 -->
             <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
             <!-- 分配权限 -->
@@ -73,6 +78,26 @@
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 修改角色对话框 -->
+    <el-dialog
+      title="编辑角色"
+      :visible.sync="updateDialogVisible"
+      width="50%"
+      @close="updateHandleClose()">
+      <el-form ref="updateFormRef" :model="updateFormData" :rules="updateRules" label-width="80px">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="updateFormData.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input v-model="updateFormData.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="updateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateRole()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -84,7 +109,20 @@ export default {
   data () {
     return {
       // 角色列表
-      rolesList: []
+      rolesList: [],
+      /* 修改角色对话框 */
+      // 是否隐藏修改角色对话框
+      updateDialogVisible: false,
+      // 修改对话框表单数据
+      updateFormData: {},
+      // 修改对话框校验规则
+      updateRules: {
+        roleName: [{
+          required: true,
+          message: '请输入角色名称',
+          trigger: 'blur'
+        }]
+      }
     }
   },
   created () {
@@ -125,6 +163,24 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
+      })
+    },
+    // 监听打开修改对话框
+    openUpdateDialog () {
+      this.updateDialogVisible = true
+      // 根据 Id 请求角色数据
+    },
+    // 监听关闭修改对话框
+    updateHandleClose () {
+      // 重置表单
+      this.$refs.updateFormRef.resetFields()
+    },
+    // 修改角色信息并提交
+    updateRole () {
+      this.$refs.updateFormRef.validate(valid => {
+        if (!valid) return
+        // 请求修改角色信息
+        console.log(this.updateFormData)
       })
     }
   }

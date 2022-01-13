@@ -14,3 +14,22 @@ export function deleteRightById (roleId, rightId) {
     method: 'delete'
   })
 }
+
+// 根据 ID 查询角色
+export function getRoleById (roleId) {
+  return request({
+    url: `roles/${roleId}`
+  })
+}
+
+// 更新角色
+export function updateRoleById (roleId, roleName, roleDesc) {
+  return request({
+    url: `roles/${roleId}`,
+    method: 'delete',
+    data: {
+      roleName,
+      roleDesc
+    }
+  })
+}
