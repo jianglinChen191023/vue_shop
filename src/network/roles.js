@@ -45,7 +45,7 @@ export function deleteRoleById (roleId) {
 // 添加角色
 export function addRole (addFormData) {
   return request({
-    url: `/roles`,
+    url: '/roles',
     method: 'post',
     data: addFormData
   })

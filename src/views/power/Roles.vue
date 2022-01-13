@@ -36,9 +36,8 @@
                         :key="item2.id">
                   <!-- 二级权限 -->
                   <el-col :span="6">
-                    <el-tag type="success" closable @close="deleteRightById(scope.row, item2.id)">{{
-                        item2.authName
-                      }}
+                    <el-tag type="success" closable @close="deleteRightById(scope.row, item2.id)">
+                      {{ item2.authName }}
                     </el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
@@ -268,12 +267,12 @@ export default {
         if (!valid) return
         // 请求添加角色信息
         addRole(this.addFormData).then(res => {
-          if (res.meta.status !== 200) {
+          if (res.meta.status !== 201) {
             return this.$message.error('添加角色信息失败!')
           }
 
           this.$message.success('添加角色信息成功')
-          this.updateDialogVisible = false
+          this.addDialogVisible = false
           this.getRolesList()
         })
       })
