@@ -12,7 +12,7 @@
       <!-- 添加角色按钮区域 -->
       <el-row>
         <el-col>
-          <el-button type="primary">添加角色</el-button>
+          <el-button type="primary" @click="addDialogVisible = true">添加角色</el-button>
         </el-col>
       </el-row>
 
@@ -99,11 +99,31 @@
         <el-button type="primary" @click="updateRole()">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 添加角色对话框 -->
+    <el-dialog
+      title="编辑角色"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addHandleClose()">
+      <el-form ref="addFormRef" :model="addFormData" :rules="addRules" label-width="80px">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="addFormData.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input v-model="addFormData.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addRole()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById } from 'network/roles'
+import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById, addRole } from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -118,6 +138,19 @@ export default {
       updateFormData: {},
       // 修改对话框校验规则
       updateRules: {
+        roleName: [{
+          required: true,
+          message: '请输入角色名称',
+          trigger: 'blur'
+        }]
+      },
+      /* 添加角色对话框 */
+      // 是否隐藏修改角色对话框
+      addDialogVisible: false,
+      // 修改对话框表单数据
+      addFormData: {},
+      // 修改对话框校验规则
+      addRules: {
         roleName: [{
           required: true,
           message: '请输入角色名称',
@@ -221,6 +254,27 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
+        })
+      })
+    },
+    // 监听关闭添加对话框
+    addHandleClose () {
+      // 重置表单
+      this.$refs.addFormRef.resetFields()
+    },
+    // 添加角色信息
+    addRole () {
+      this.$refs.addFormRef.validate(valid => {
+        if (!valid) return
+        // 请求添加角色信息
+        addRole(this.addFormData).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('添加角色信息失败!')
+          }
+
+          this.$message.success('添加角色信息成功')
+          this.updateDialogVisible = false
+          this.getRolesList()
         })
       })
     }
