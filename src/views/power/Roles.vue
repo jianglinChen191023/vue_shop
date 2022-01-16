@@ -72,7 +72,7 @@
             </el-button>
             <!-- 分配权限 -->
             <el-tooltip effect="dark" content="分配权限" placement="top-start" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRightDialog">分配权限</el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -118,11 +118,23 @@
         <el-button type="primary" @click="addRole()">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配权限的对话框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="setRightDialogVisible"
+      width="50%">
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRightDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById, addRole } from 'network/roles'
+import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById, addRole, getRightsTree } from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -155,7 +167,12 @@ export default {
           message: '请输入角色名称',
           trigger: 'blur'
         }]
-      }
+      },
+      /* 分配权限的对话框 */
+      // 是否隐藏修改角色对话框
+      setRightDialogVisible: false,
+      // 所有权限的数据
+      rightsList: []
     }
   },
   created () {
@@ -276,6 +293,21 @@ export default {
           this.getRolesList()
         })
       })
+    },
+    // 展示分配权限的对话框
+    showSetRightDialog () {
+      // 获取所有权限的数据
+      getRightsTree()
+        .then(res => {
+          if (res.meta.status !== 200) {
+            this.$message.error('获取权限数据失败!')
+          }
+
+          // 保存权限数据
+          this.rightsList = res.data
+          // 显示对话框
+          this.setRightDialogVisible = true
+        })
     }
   }
 }

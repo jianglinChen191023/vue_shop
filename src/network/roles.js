@@ -50,3 +50,10 @@ export function addRole (addFormData) {
     data: addFormData
   })
 }
+
+// 获取所有权限
+export function getRightsTree () {
+  return request({
+    url: '/rights/tree'
+  })
+}
