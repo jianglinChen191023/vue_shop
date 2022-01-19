@@ -46,3 +46,21 @@ export function deleteUserInfoById (id) {
     method: 'delete'
   })
 }
+
+// 获取所有角色
+export function getAllRole () {
+  return request({
+    url: '/roles'
+  })
+}
+
+// 修改用户的角色
+export function updateRoleByUserId (userId, rid) {
+  return request({
+    url: `/users/${userId}/role`,
+    method: 'put',
+    data: {
+      rid
+    }
+  })
+}
