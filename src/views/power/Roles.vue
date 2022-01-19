@@ -72,7 +72,8 @@
             </el-button>
             <!-- 分配权限 -->
             <el-tooltip effect="dark" content="分配权限" placement="top-start" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRightDialog">分配权限</el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRightDialog(scope.row)">分配权限
+              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -123,18 +124,31 @@
     <el-dialog
       title="分配权限"
       :visible.sync="setRightDialogVisible"
-      width="50%">
-      <span>这是一段信息</span>
+      width="50%"
+      @close="setRightHandleClose()">
+      <!-- 树形控件 -->
+      <el-tree :data="rightsList" :props="treeProps" show-checkbox node-key="id" default-expand-all
+               :default-checked-keys="defKeys" ref="treeRef"></el-tree>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setRightDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="allotRights">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesList, deleteRightById, getRoleById, updateRoleById, deleteRoleById, addRole, getRightsTree } from 'network/roles'
+import {
+  getRolesList,
+  deleteRightById,
+  getRoleById,
+  updateRoleById,
+  deleteRoleById,
+  addRole,
+  getRightsTree,
+  updateRightsByRoleId
+} from 'network/roles'
 
 export default {
   name: 'Roles',
@@ -172,7 +186,16 @@ export default {
       // 是否隐藏修改角色对话框
       setRightDialogVisible: false,
       // 所有权限的数据
-      rightsList: []
+      rightsList: [],
+      // 树形控件的属性绑定对象
+      treeProps: {
+        label: 'authName',
+        children: 'children'
+      },
+      // 默认选中的节点 Id 值数组
+      defKeys: [],
+      // 当前即将分配权限的角色 Id
+      roleId: ''
     }
   },
   created () {
@@ -295,7 +318,8 @@ export default {
       })
     },
     // 展示分配权限的对话框
-    showSetRightDialog () {
+    showSetRightDialog (role) {
+      this.roleId = role.id
       // 获取所有权限的数据
       getRightsTree()
         .then(res => {
@@ -305,8 +329,44 @@ export default {
 
           // 保存权限数据
           this.rightsList = res.data
+          // 拥有的权限 Id
+          this.getLeafKeys(role)
           // 显示对话框
           this.setRightDialogVisible = true
+        })
+    },
+    // 通过递归的形式, 获取角色下所有三级权限的 Id, 并保存到 defKeys 数组中
+    getLeafKeys (node) {
+      // 如果当前 node 节点不包含 children 属性, 则是三级节点
+      if (!node.children) {
+        return this.defKeys.push(node.id)
+      }
+
+      node.children.forEach(item => {
+        this.getLeafKeys(item)
+      })
+    },
+    // 监听 分配权限对话框 关闭事件
+    setRightHandleClose () {
+      this.defKeys = []
+    },
+    // 分配权限确认按钮,为角色分配权限A
+    allotRights () {
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+
+      const idStr = keys.join(',')
+      updateRightsByRoleId(this.roleId, idStr)
+        .then(res => {
+          if (res.meta.status !== 200) {
+            this.$message.error('分配权限失败!')
+          }
+
+          this.$message.success('分配权限成功!')
+          this.getRolesList()
+          this.setRightDialogVisible = false
         })
     }
   }

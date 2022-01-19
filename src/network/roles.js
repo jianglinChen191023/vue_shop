@@ -57,3 +57,14 @@ export function getRightsTree () {
     url: '/rights/tree'
   })
 }
+
+// 更新角色权限
+export function updateRightsByRoleId (roleId, rids) {
+  return request({
+    url: `/roles/${roleId}/rights`,
+    method: 'post',
+    data: {
+      rids
+    }
+  })
+}
