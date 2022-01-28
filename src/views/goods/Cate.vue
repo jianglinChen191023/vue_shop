@@ -16,7 +16,36 @@
       </el-row>
 
       <!-- 表格 -->
-
+      <zk-table
+        ref="table"
+        sum-text="sum"
+        index-text="#"
+        :data="cateList"
+        :columns="columns"
+        :stripe="props.stripe"
+        :border="props.border"
+        :show-header="props.showHeader"
+        :show-summary="props.showSummary"
+        :show-row-hover="props.showRowHover"
+        :show-index="props.showIndex"
+        :tree-type="props.treeType"
+        :is-fold="props.isFold"
+        :expand-type="props.expandType"
+        :selection-type="props.selectionType">
+        <template slot="isok" slot-scope="scope">
+          <i v-if="scope.row.cat_deleted === false" class="el-icon-success" style="color: lightgreen"></i>
+          <i v-else class="el-icon-error" style="color: red"></i>
+        </template>
+        <template slot="order" slot-scope="scope">
+          <el-tag size="mini" v-if="scope.row.cat_level === 0">一级</el-tag>
+          <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
+          <el-tag type="warning" size="mini" v-else>三级</el-tag>
+        </template>
+        <template slot="opt">
+          <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
+          <el-button type="primary" icon="el-icon-delete" size="mini">删除</el-button>
+        </template>
+      </zk-table>
       <!-- 分页区域 -->
     </el-card>
   </div>
@@ -36,9 +65,45 @@ export default {
         pagesize: 5
       },
       // 商品分类的数据列表, 默认为空
-      cateList: {},
+      cateList: [],
       // 总数据条数
-      total: 0
+      total: 0,
+      // 为 table 指定列的定义
+      columns: [{
+        label: '分类名称',
+        prop: 'cat_name'
+      }, {
+        label: '是否有效',
+        // 表示 将当前列定义为模板列
+        type: 'template',
+        // 表示 当前这一列使用模板名称
+        template: 'isok'
+      }, {
+        label: '排序',
+        // 表示 将当前列定义为模板列
+        type: 'template',
+        // 表示 当前这一列使用模板名称
+        template: 'order'
+      }, {
+        label: '操作',
+        // 表示 将当前列定义为模板列
+        type: 'template',
+        // 表示 当前这一列使用模板名称
+        template: 'opt'
+      }],
+      props: {
+        // 是否为多选类型表格
+        selectionType: false,
+        // 是否为展开行类型表格（为 True 时，需要添加名称为 '$expand' 的作用域插槽
+        // , 它可以获取到 row, rowIndex)
+        expandType: false,
+        // 是否显示数据索引
+        showIndex: true,
+        // 是否显示纵向边框
+        border: true,
+        // 鼠标悬停时，是否高亮当前行
+        showRowHover: false
+      }
     }
   },
   created () {
