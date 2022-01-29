@@ -16,22 +16,22 @@
       </el-row>
 
       <!-- 表格 -->
-      <zk-table
-        ref="table"
-        sum-text="sum"
-        index-text="#"
-        :data="cateList"
-        :columns="columns"
-        :stripe="props.stripe"
-        :border="props.border"
-        :show-header="props.showHeader"
-        :show-summary="props.showSummary"
-        :show-row-hover="props.showRowHover"
-        :show-index="props.showIndex"
-        :tree-type="props.treeType"
-        :is-fold="props.isFold"
-        :expand-type="props.expandType"
-        :selection-type="props.selectionType">
+      <zk-table class="zkTable"
+                ref="table"
+                sum-text="sum"
+                index-text="#"
+                :data="cateList"
+                :columns="columns"
+                :stripe="props.stripe"
+                :border="props.border"
+                :show-header="props.showHeader"
+                :show-summary="props.showSummary"
+                :show-row-hover="props.showRowHover"
+                :show-index="props.showIndex"
+                :tree-type="props.treeType"
+                :is-fold="props.isFold"
+                :expand-type="props.expandType"
+                :selection-type="props.selectionType">
         <template slot="isok" slot-scope="scope">
           <i v-if="scope.row.cat_deleted === false" class="el-icon-success" style="color: lightgreen"></i>
           <i v-else class="el-icon-error" style="color: red"></i>
@@ -43,10 +43,20 @@
         </template>
         <template slot="opt">
           <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
-          <el-button type="primary" icon="el-icon-delete" size="mini">删除</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
         </template>
       </zk-table>
+
       <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[3, 5, ,10, 15]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -124,11 +134,23 @@ export default {
         // 为总数据条数赋值
         this.total = res.data.total
       })
+    },
+    // 接听 pageSize 改变
+    handleSizeChange (newSize) {
+      this.queryInfo.pagesize = newSize
+      this.getCateList()
+    },
+    // 监听 pagenum 改变
+    handleCurrentChange (newPage) {
+      this.queryInfo.pagenum = newPage
+      this.getCateList()
     }
   }
 }
 </script>
 
 <style scoped>
-
+.zkTable {
+  margin-top: 15px;
+}
 </style>
