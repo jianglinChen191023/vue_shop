@@ -63,7 +63,8 @@
     <el-dialog
       title="提示"
       :visible.sync="addCateDialogVisible"
-      width="50%">
+      width="50%"
+      @close="addCateDialogClosed">
 
       <!-- 添加分类的表单 -->
       <el-form :model="addCateForm" :rules="addCateFormRules"
@@ -241,6 +242,13 @@ export default {
 
         this.parentCateList = res.data
       })
+    },
+    // 监听 添加分类对话框 的关闭事件, 重置表单数据
+    addCateDialogClosed () {
+      this.$refs.addCateFormRef.resetFields()
+      this.selectedKeys = []
+      this.addCateForm.cat_pid = 0
+      this.addCateForm.cat_level = 0
     }
   }
 }
