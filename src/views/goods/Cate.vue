@@ -91,14 +91,14 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCateDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getCateList } from 'network/cate'
+import { getCateList, addCate } from 'network/cate'
 
 export default {
   name: 'Cate',
@@ -249,6 +249,21 @@ export default {
       this.selectedKeys = []
       this.addCateForm.cat_pid = 0
       this.addCateForm.cat_level = 0
+    },
+    // 点击按钮, 添加新的分类
+    addCate () {
+      this.$refs.addCateFormRef.validate(valid => {
+        if (!valid) return
+        addCate(this.addCateForm).then(res => {
+          if (res.meta.status !== 201) {
+            return this.$message.error('添加分类失败!')
+          }
+
+          this.$message.success('添加分类成功!')
+          this.getCateList()
+          this.addCateDialogVisible = false
+        })
+      })
     }
   }
 }

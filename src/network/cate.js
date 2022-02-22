@@ -7,3 +7,12 @@ export function getCateList (queryInfo) {
     params: queryInfo
   })
 }
+
+// 添加分类
+export function addCate (data) {
+  return request({
+    url: '/categories',
+    method: 'post',
+    data: data
+  })
+}
