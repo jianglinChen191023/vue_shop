@@ -11,7 +11,7 @@
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary">添加分类</el-button>
+          <el-button type="primary" @click="showAddCateDialog">添加分类</el-button>
         </el-col>
       </el-row>
 
@@ -58,6 +58,26 @@
         :total="total">
       </el-pagination>
     </el-card>
+
+    <!--  添加分类对话框  -->
+    <el-dialog
+      title="提示"
+      :visible.sync="addCateDialogVisible"
+      width="50%">
+
+      <!-- 添加分类的表单 -->
+      <el-form :model="addCateForm" :rules="addCateFormRules"
+               ref="addCateFormRef" label-width="100px">
+        <el-form-item label="分类名称" prop="cat_name">
+          <el-input v-model="addCateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addCateDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -113,6 +133,25 @@ export default {
         border: true,
         // 鼠标悬停时，是否高亮当前行
         showRowHover: false
+      },
+      // 控制添加分类对话框的显示与隐藏
+      addCateDialogVisible: false,
+      addCateForm: {
+        // 将要添加的分类的名称
+        cat_name: '',
+        // 父级分类的 Id
+        cat_pid: 0,
+        // 分类的等级, 默认要添加的1级分类
+        cat_level: 0
+      },
+      addCateFormRules: {
+        cat_name: [
+          {
+            required: true,
+            message: '请输入分类名称',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
@@ -144,6 +183,10 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
       this.getCateList()
+    },
+    // 点击按钮, 展示 添加分类 对话框
+    showAddCateDialog () {
+      this.addCateDialogVisible = true
     }
   }
 }
