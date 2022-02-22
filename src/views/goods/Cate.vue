@@ -68,8 +68,23 @@
       <!-- 添加分类的表单 -->
       <el-form :model="addCateForm" :rules="addCateFormRules"
                ref="addCateFormRef" label-width="100px">
-        <el-form-item label="分类名称" prop="cat_name">
+        <el-form-item label="分类名称: " prop="cat_name">
           <el-input v-model="addCateForm.cat_name"></el-input>
+        </el-form-item>
+
+        <el-form-item label="父级分类: ">
+          <!-- options 用来指定数据源
+               props: 用来指定配置对象
+               clearable: 设置输入框可清空
+               change-on-select: 允许选择任意一级的选项 -->
+          <el-cascader
+            change-on-select
+            clearable
+            expand-trigger="hover"
+            v-model="selectedKeys"
+            :options="parentCateList"
+            :props="cascaderProps"
+            @change="parentCateChanged"></el-cascader>
         </el-form-item>
       </el-form>
 
@@ -152,7 +167,17 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      // 父级分类的列表
+      parentCateList: [],
+      // 指定级联选择器的配置对象
+      cascaderProps: {
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
+      },
+      // 选中的父级分类的 Id 数组
+      selectedKeys: []
     }
   },
   created () {
@@ -186,7 +211,24 @@ export default {
     },
     // 点击按钮, 展示 添加分类 对话框
     showAddCateDialog () {
+      // 先获取父级分类的数据列表
+      this.getParentCateList()
+      // 再展示出对话框
       this.addCateDialogVisible = true
+    },
+    // 选择项发生变化触发这个函数
+    parentCateChanged () {
+
+    },
+    // 获取父级分类的数据列表
+    getParentCateList () {
+      getCateList().then(res => {
+        if (res.meta.status !== 200) {
+          this.$message.error('获取父级分类数据失败!')
+        }
+
+        this.parentCateList = res.data
+      })
     }
   }
 }
@@ -195,5 +237,9 @@ export default {
 <style scoped>
 .zkTable {
   margin-top: 15px;
+}
+
+.el-cascader {
+  width: 100%
 }
 </style>
