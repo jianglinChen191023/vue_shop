@@ -42,8 +42,10 @@
           <el-tag type="warning" size="mini" v-else>三级</el-tag>
         </template>
         <template slot="opt" slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="showUpdateDialog(scope.row.cat_id)">编辑</el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="showUpdateDialog(scope.row.cat_id)">编辑
+          </el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteCate(scope.row.cat_id)">删除
+          </el-button>
         </template>
       </zk-table>
 
@@ -117,7 +119,7 @@
 </template>
 
 <script>
-import { getCateList, addCate, getCateById, updateCate } from 'network/cate'
+import { getCateList, addCate, getCateById, updateCate, deleteCateById } from 'network/cate'
 
 export default {
   name: 'Cate',
@@ -327,6 +329,28 @@ export default {
             this.getCateList()
           })
         }
+      })
+    },
+    // 删除分类
+    deleteCate (id) {
+      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteCateById(id).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('删除分类失败!')
+          }
+
+          this.$message.success('删除分类成功!')
+          this.getCateList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   }

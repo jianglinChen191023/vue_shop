@@ -34,3 +34,11 @@ export function updateCate (id, catName) {
     }
   })
 }
+
+// 根据 id 删除分类
+export function deleteCateById (id) {
+  return request({
+    url: `/categories/${id}`,
+    method: 'delete'
+  })
+}
