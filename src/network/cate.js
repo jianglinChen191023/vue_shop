@@ -16,3 +16,21 @@ export function addCate (data) {
     data: data
   })
 }
+
+// 根据 id 查询分类
+export function getCateById (id) {
+  return request({
+    url: `/categories/${id}`
+  })
+}
+
+// 编辑提交分类
+export function updateCate (id, catName) {
+  return request({
+    url: `/categories/${id}`,
+    method: 'put',
+    data: {
+      cat_name: catName
+    }
+  })
+}

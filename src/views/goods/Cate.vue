@@ -41,8 +41,8 @@
           <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
           <el-tag type="warning" size="mini" v-else>三级</el-tag>
         </template>
-        <template slot="opt">
-          <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
+        <template slot="opt" slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="showUpdateDialog(scope.row.cat_id)">编辑</el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
         </template>
       </zk-table>
@@ -94,11 +94,30 @@
         <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!--  编辑分类的表单  -->
+    <el-dialog
+      title="编辑分类"
+      :visible.sync="updateDialogVisible"
+      width="50%">
+
+      <!-- 编辑分类表单 -->
+      <el-form ref="updateFormRef" :model="updateForm" :rules="updateRules" label-width="80px">
+        <el-form-item label="分类名称" prop="cat_name">
+          <el-input v-model="updateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="updateDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="updateCate">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getCateList, addCate } from 'network/cate'
+import { getCateList, addCate, getCateById, updateCate } from 'network/cate'
 
 export default {
   name: 'Cate',
@@ -178,7 +197,25 @@ export default {
         children: 'children'
       },
       // 选中的父级分类的 Id 数组
-      selectedKeys: []
+      selectedKeys: [],
+      // 要修改的数据 id - 编辑分类
+      updateId: '',
+      // 控制对话框的显示与隐藏 - 编辑分类
+      updateDialogVisible: false,
+      // 表单数据 - 编辑分类
+      updateForm: {
+        cat_name: ''
+      },
+      // 表单验证规则 - 编辑分类
+      updateRules: {
+        cat_name: [
+          {
+            required: 'true',
+            message: '分类名称不能为空!',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   created () {
@@ -263,6 +300,33 @@ export default {
           this.getCateList()
           this.addCateDialogVisible = false
         })
+      })
+    },
+    // 显示对话框 - 编辑分类
+    showUpdateDialog (id) {
+      getCateById(id).then(res => {
+        if (res.meta.status !== 200) {
+          return this.$message.error('查询分类失败!')
+        }
+
+        this.updateDialogVisible = true
+        this.updateForm = res.data
+      })
+    },
+    // 提交表单数据 - 编辑分类
+    updateCate () {
+      this.$refs.updateFormRef.validate(valid => {
+        if (valid) {
+          updateCate(this.updateForm.cat_id, this.updateForm.cat_name).then(res => {
+            if (res.meta.status !== 200) {
+              return this.$message.error('编辑分类失败!')
+            }
+
+            this.$message.success('编辑分类成功!')
+            this.updateDialogVisible = false
+            this.getCateList()
+          })
+        }
       })
     }
   }
