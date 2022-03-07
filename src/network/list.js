@@ -7,3 +7,11 @@ export function getGoodsList (queryInfo) {
     params: queryInfo
   })
 }
+
+// 根据 Id 删除商品
+export function deleteGoodsById (id) {
+  return request({
+    url: `/goods/${id}`,
+    method: 'delete'
+  })
+}

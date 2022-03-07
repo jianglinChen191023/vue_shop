@@ -11,7 +11,8 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input v-model="queryInfo.query" placeholder="请输入内容" class="input-with-select" clearable @clear="getGoodsList">
+          <el-input v-model="queryInfo.query" placeholder="请输入内容" class="input-with-select" clearable
+                    @clear="getGoodsList">
             <el-button slot="append" icon="el-icon-search" @click="getGoodsList"></el-button>
           </el-input>
         </el-col>
@@ -31,9 +32,10 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="130px">
-          <template>
+          <template slot-scope="scope">
             <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
-            <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete"
+                       @click="deleteGoodsById(scope.row.goods_id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -53,7 +55,7 @@
 </template>
 
 <script>
-import { getGoodsList } from 'network/list'
+import { getGoodsList, deleteGoodsById } from 'network/list'
 
 export default {
   name: 'List',
@@ -94,6 +96,27 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
+    },
+    deleteGoodsById (id) {
+      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteGoodsById(id).then(res => {
+          if (res.meta.status !== 200) {
+            return this.$message.error('删除失败!')
+          }
+
+          this.$message.success('删除成功!')
+          this.getGoodsList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
