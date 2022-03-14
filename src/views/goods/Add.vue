@@ -62,11 +62,33 @@
               <el-input v-model="item.attr_vals"></el-input>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
+          <el-tab-pane label="商品图片" name="3">
+            <!-- action 图片要上传到的 API 地址
+                 handlePreview: 处理图片预览效果
+                 handleRemove: 处理移除图片的操作-->
+            <el-upload
+                :on-success="handleSuccess"
+                :headers="headerObj"
+                :action="uploadURL"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                list-type="picture">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+          </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
+
+    <!-- 图片预览对话框 -->
+    <el-dialog
+        title="图片预览"
+        :visible.sync="previewDialogVisible"
+        width="50%">
+      <img :src="previewPath" alt="" class="previewImg">
+    </el-dialog>
   </div>
 </template>
 
@@ -87,7 +109,9 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         // 商品所属的分类数组
-        goods_cat: []
+        goods_cat: [],
+        // 图片的数组
+        pics: []
       },
       // 表单规则对象
       addFormRules: {
@@ -130,7 +154,17 @@ export default {
       },
       // 参数面板 > 动态参数列表数据
       manyTableData: [],
-      onlyTableData: []
+      onlyTableData: [],
+      // 上传图片的 URL 地址
+      uploadURL: 'https://lianghj.top:8888/api/private/v1/upload',
+      // 图片上传组件的 headers 请求头对象
+      headerObj: {
+        authorization: this.$store.getters.token
+      },
+      // 图片预览 URL 地址
+      previewPath: '',
+      // 控制图片预览对话框的显示与隐藏
+      previewDialogVisible: false
     }
   },
   created () {
@@ -144,7 +178,6 @@ export default {
         }
 
         this.cateList = res.data
-        console.log(this.cateList)
       })
     },
     // 级联选择器选中项变化, 会触发这个函数
@@ -187,6 +220,28 @@ export default {
           this.onlyTableData = res.data
         })
       }
+    },
+    // 处理图片预览效果
+    handlePreview (file) {
+      console.log(file)
+      this.previewPath = file.response.data.url
+      this.previewDialogVisible = true
+    },
+    // 处理移除图片的操作
+    handleRemove (file) {
+      // 1. 获取将要删除的图片的临时路径
+      const filePath = file.response.data.tmp_path
+      // 2. 从 pics 数组中, 找到这个图片对应的索引值
+      const i = this.addForm.pics.findIndex(x => x.pic === filePath)
+      // 3. 调用数组的 slice 方法, 把图片信息对象, 从 pics 数组中移除
+      this.addForm.pics.splice(i, 1)
+    },
+    // 监听图片上传成功的事件
+    handleSuccess (response) {
+      // 1. 拼接得到一个图片信息对象
+      const picInfo = { pic: response.data.tmp_path }
+      // 2. 将图片信息对象, push 到数组中
+      this.addForm.pics.push(picInfo)
     }
   },
   computed: {
@@ -209,5 +264,9 @@ export default {
 
 .el-checkbox {
   margin: 0 5px 0 0 !important;
+}
+
+.previewImg {
+  width: 100%
 }
 </style>
