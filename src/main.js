@@ -7,6 +7,16 @@ import './plugins/element'
 /* 导入字体图标 */
 import 'assets/fonts/iconfont.css'
 import ZKTable from 'vue-table-with-tree-grid'
+// start 富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+// end
+
+// 将富文本编辑器, 注册为全局可用的组件
+Vue.use(VueQuillEditor)
 
 Vue.use(ZKTable)
 // import { getLogin } from './network/login'
