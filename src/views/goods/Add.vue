@@ -80,6 +80,8 @@
           <el-tab-pane label="商品内容" name="4">
             <!-- 富文本编辑器组件 -->
             <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+            <!-- 添加按钮 -->
+            <el-button type="primary" class="btnAdd" @click="add">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -97,7 +99,8 @@
 
 <script>
 import { getCateList } from 'network/cate'
-import { getManyListById, getOnlyListById } from 'network/add'
+import { getManyListById, getOnlyListById, addGoods } from 'network/add'
+import _ from 'lodash'
 
 export default {
   name: 'Add',
@@ -116,7 +119,9 @@ export default {
         // 图片的数组
         pics: [],
         // 商品的详情描述
-        goods_introduce: ''
+        goods_introduce: '',
+        // 商品的参数, 包含 静态属性和动态参数
+        attrs: []
       },
       // 表单规则对象
       addFormRules: {
@@ -247,6 +252,54 @@ export default {
       const picInfo = { pic: response.data.tmp_path }
       // 2. 将图片信息对象, push 到数组中
       this.addForm.pics.push(picInfo)
+    },
+    // 添加商品功能
+    add () {
+      // 获取表单对象并校验
+      this.$refs.addFormRef.validate(valid => {
+        if (!valid) {
+          return this.$message.error('请填写必要的表单项!')
+        }
+
+        // 执行添加的业务逻辑
+        // 1. 深拷贝表单数组
+        const addFormClone = _.cloneDeep(this.addForm)
+        // 2. 将 goods_cat 数组中所有元素拼接为一个字符串 , 号隔开
+        addFormClone.goods_cat = addFormClone.goods_cat.join(',')
+        // 2.1 检查
+        // console.log(addFormClone.goods_cat)
+        // 3. 处理动态参数 和 静态属性
+        this.manyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+
+          addFormClone.attrs.push(newInfo)
+        })
+
+        this.onlyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+
+          addFormClone.attrs.push(newInfo)
+        })
+        // 3.1 检查
+        // console.log(addFormClone.attrs)
+        console.log(addFormClone)
+        // 4. 请求添加商品
+        // 商品名称必须是唯一的
+        addGoods(addFormClone).then(res => {
+          if (res.meta.status !== 201) {
+            return this.$message.error('添加商品失败!')
+          }
+
+          this.$message.success('添加商品成功!')
+          this.$router.push('/goods')
+        })
+      })
     }
   },
   computed: {
@@ -277,6 +330,10 @@ export default {
 
 .ql_editor {
   min-height: 300px;
+}
+
+.btnAdd {
+  margin-top: 15px;
 }
 
 </style>
