@@ -33,7 +33,7 @@
         </el-table-column>
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
+            <el-button size="mini" type="primary" icon="el-icon-edit" @click="goUpdatePage(scope.row.goods_id)"></el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete"
                        @click="deleteGoodsById(scope.row.goods_id)"></el-button>
           </template>
@@ -132,6 +132,17 @@ export default {
     },
     goAddPage () {
       this.$router.push('/goods/add')
+    },
+    goUpdatePage (id) {
+      // 1. 检查传递的参数
+      // console.log(id)
+      // 2. 携带参数跳转页面
+      this.$router.push({
+        path: '/goods/update',
+        query: {
+          id
+        }
+      })
     }
   }
 }
