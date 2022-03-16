@@ -29,6 +29,7 @@ Vue.config.productionTip = false
 
 // 全局时间过滤器
 Vue.filter('dateFormat', function (originVal) {
+  originVal = (originVal + '').length === 10 ? originVal * 1000 : originVal
   const dt = new Date(originVal)
   const y = dt.getFullYear()
   const m = (dt.getMonth() + 1 + '').padStart(2, '0')
