@@ -7,3 +7,19 @@ export function getOrderList (queryInfo) {
     params: queryInfo
   })
 }
+
+// 修改订单信息
+export function updateOrder (id, data) {
+  return request({
+    url: `/orders/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 获取物流进度
+export function getKuaidiById (id) {
+  return request({
+    url: `/kuaidi/${id}`
+  })
+}

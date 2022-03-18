@@ -38,8 +38,10 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="130">
-          <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-          <el-button type="success" icon="el-icon-location" size="mini"></el-button>
+          <template slot-scope="scope">
+            <el-button @click="showBox(scope.row.order_id, scope.row.order_price)" type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <el-button @click="showProgressBox" type="success" icon="el-icon-location" size="mini"></el-button>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -54,11 +56,50 @@
           :total="total">
       </el-pagination>
     </el-card>
+
+    <!-- 修改地址的对话框 -->
+    <el-dialog
+        title="修改地址"
+        :visible.sync="updateDialogVisible"
+        width="50%"
+        @close="updateDialogClosed">
+
+      <!-- 表单 -->
+      <el-form :rules="updateRules" ref="updateFormRef" :model="updateForm" label-width="100px">
+        <el-form-item label="省市区/县" prop="address1">
+          <el-cascader :options="cityData" v-model="updateForm.address1" expand-trigger="hover"></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" prop="address2">
+          <el-input v-model="updateForm.address2"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="updateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateOrder">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 物流进度的对话框 -->
+    <el-dialog
+        title="物流进度"
+        :visible.sync="progressDialogVisible"
+        width="50%">
+      <el-timeline>
+        <el-timeline-item
+            v-for="(activity, index) in progressInfo"
+            :key="index"
+            :timestamp="activity.time">
+          {{ activity.context }}
+        </el-timeline-item>
+      </el-timeline>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getOrderList } from 'network/order'
+import { getOrderList, getKuaidiById, updateOrder } from 'network/order'
+import cityData from './citydata'
 
 export default {
   name: 'Order',
@@ -70,7 +111,34 @@ export default {
         pagenum: 1
       },
       orderList: [],
-      total: 0
+      total: 0,
+      // 控制地址修改对话框的显示与隐藏
+      updateDialogVisible: false,
+      updateForm: {
+        address1: [],
+        address2: ''
+      },
+      updateRules: {
+        address1: [{
+          required: true,
+          message: '请选择省市区/县',
+          trigger: 'blur'
+        }],
+        address2: [{
+          required: true,
+          message: '请填写详情地址',
+          trigger: 'blur'
+        }]
+      },
+      cityData,
+      // 控制物流进度对话框的显示与隐藏
+      progressDialogVisible: false,
+      // 物流进度
+      progressInfo: [],
+      // 修改地址的 id
+      order_id: 0,
+      // 修改地址请求所需要的参数 订单价格
+      order_price: 0
     }
   },
   created () {
@@ -84,8 +152,8 @@ export default {
         }
 
         this.$message.success('获取订单列表成功!')
-        console.log(res)
         this.orderList = res.data.goods
+        console.log(this.orderList)
         this.total = res.data.total
       })
     },
@@ -96,11 +164,55 @@ export default {
     handleCurrentChange (newNum) {
       this.queryInfo.pagenum = newNum
       this.getOrderList()
+    },
+    // 展示修改地址对话框
+    showBox (id, price) {
+      this.order_id = id
+      this.order_price = price
+      this.updateDialogVisible = true
+    },
+    // 监听修改地址对话框的关闭事件
+    updateDialogClosed () {
+      this.$refs.updateFormRef.resetFields()
+      this.order_id = 0
+      this.order_price = 0
+    },
+    // 显示物流进度的对话框
+    showProgressBox () {
+      // 获取物流进度
+      getKuaidiById('1106975712662').then(res => {
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取物流进度失败!')
+        }
+
+        this.progressInfo = res.data
+        this.progressDialogVisible = true
+      })
+    },
+    // 修改地址
+    updateOrder () {
+      updateOrder(this.order_id, {
+        consignee_addr: this.updateForm.address1 + ' ' + this.updateForm.address2,
+        order_price: this.order_price
+      }).then(res => {
+        if (res.meta.status !== 201) {
+          this.$message.error('修改地址失败!')
+        }
+
+        this.$message.success('修改地址成功!')
+        this.updateDialogVisible = false
+        this.getOrderList()
+      })
     }
   }
 }
 </script>
 
 <style scoped>
+@import '../../plugins/element/timeline/timeline.css';
+@import '../../plugins/element/timeline-item/timeline-item.css';
 
+.el-cascader {
+  width: 100%;
+}
 </style>
