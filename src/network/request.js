@@ -3,7 +3,8 @@ import store from '../store'
 
 // 导入 NProgress 包对应的 JS 和 CSS
 import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+// 移动到 main-dev.js 中
+// import 'nprogress/nprogress.css'
 
 // 三次优化
 export function request (config) {
