@@ -10,7 +10,8 @@ import NProgress from 'nprogress'
 export function request (config) {
   // 1. 创建 axios 的实例
   const instance = axios.create({
-    baseURL: 'https://lianghj.top:8888/api/private/v1',
+    // baseURL: 'https://lianghj.top:8888/api/private/v1',
+    baseURL: 'http://175.178.174.83:8888/api/private/v1',
     timeout: 5000
   })
 
