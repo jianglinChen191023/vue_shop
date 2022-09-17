@@ -48,7 +48,8 @@ jobs:
           pass: ${{ secrets.USER_PASS }}
           connect_timeout: 10s
           local: './dist/*'
-          remote: /usr/share/nginx/html2
+          # 上传到服务器文件夹中 示例: /usr/share/nginx/html/vue_shop
+          remote: ${{ secrets.PATH }}
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         # 在 GITHUB_WORKSPACE 下签出您的存储库，以便您的工作可以访问它
         #      - uses: actions/checkout@v2
